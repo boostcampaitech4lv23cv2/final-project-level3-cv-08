@@ -2,4 +2,7 @@
 data/
 
 # mmseg
-opt/ml/mmsegmentation/
+mmsegmentation/
+
+#.
+.*
