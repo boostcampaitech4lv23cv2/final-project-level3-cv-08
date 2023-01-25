@@ -1,6 +1,3 @@
-from typing import List, Dict, Any
-
-
 import numpy as np
 import torch
 from mmseg.apis import inference_segmentor, init_segmentor
