@@ -13,48 +13,45 @@ from app.confirm_button_hack import cache_on_button_press
 
 st.set_page_config(layout="wide")
 
-root_password = 'password'
-
 
 def main():
     st.title("Car Segmentation Model")
-    car_number = st.text_input("차량번호 입력", key="car_number")
-    car_number_btn = st.button("확인")
-    uploaded_file = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png"])
-        
-    if uploaded_file:
-        uploaded_file.name = car_number
-        image_bytes = uploaded_file.getvalue()
-        image = Image.open(io.BytesIO(image_bytes))
-
-        st.image(image, caption='Uploaded Image')
-        st.write("Segmenting...")
-        st.write(car_number)
-        files = [
-            ('files', (uploaded_file.name, image_bytes,
-                    uploaded_file.type))
-        ]
-        requests.post("http://localhost:8001/predict", files=files)
-        
-        response = get_images()
-        st.write(response)
+    uploaded_files = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png"], accept_multiple_files=True)
     
-        
+    if uploaded_files:
+        for uploaded_file in uploaded_files:
+            uploaded_file.name = car_number
+            image_bytes = uploaded_file.getvalue()
+            image = Image.open(io.BytesIO(image_bytes))
 
+            st.image(image, caption='Uploaded Image')
+            st.write("Segmenting...")
+            files = [
+                ('files', (uploaded_file.name, image_bytes,
+                        uploaded_file.type))
+            ]
+            requests.post("http://localhost:8001/predict", files=files)
+        
+            response = get_image(car_number)
+            st.image(Image.open(io.BytesIO(response.content)))
+        
 
 @cache_on_button_press('Authenticate')
-def authenticate(password) -> bool:
-    return password == root_password
+def authenticate(car_number) -> bool:
+    return type(car_number) == str
 
 def get_images():
     response = requests.get("http://localhost:8001/images")
     return response.json()
 
+def get_image(car_number:str):
+    response = requests.get(f"http://localhost:8001/images/{car_number}")
+    return response
 
-password = st.text_input('password', type="password")
+car_number = st.text_input('Car number')
 
-if authenticate(password):
+if authenticate(car_number):
     st.success('You are authenticated!')
     main()
 else:
-    st.error('The password is invalid.')
+    st.error('The car number is invalid.')
