@@ -1,4 +1,5 @@
 ## Repository 구조
+```
 |-- DB
 |-- Makefile
 |-- README.md
@@ -19,7 +20,7 @@
     |-- scratched.py
     |-- separated.pth
     `-- separated.py
-
+```
 ## Getting Started
 0. 현재 위치를 mmsegmentation/app 으로 변경합니다
       ```shell
