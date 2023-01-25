@@ -1,30 +1,31 @@
 import io
 import sys
 import numpy as np
-from collections import defaultdict
 from PIL import Image
 import matplotlib.pyplot as plt
 
 from fastapi import FastAPI, UploadFile, File
-from fastapi.param_functions import Depends
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 from uuid import UUID, uuid4
 from typing import List
 
 sys.path.append('../')
-from app.model import get_model, predict_image
 from app.db import read_log, write_log
+from app.model import predict_image
+from app.config import get_setting
 
 app = FastAPI()
 
 class ImageId(BaseModel):
     id: UUID = Field(default_factory=uuid4)
     image_id: UUID = Field(default_factory=uuid4)
+    damage: list = []
 
-model= get_model()
-SAVE_PATH = "./DB/"
-data_info = {'id':0, 'image_id':1}
+# model과 config파일 가져옴
+config = get_setting()
+SAVE_PATH = config['SAVE_PATH']
+data_info = config['data_info']
 
 @app.get("/")
 def hello_world():
@@ -32,7 +33,7 @@ def hello_world():
 
 @app.post("/predict", description="예측을 시작합니다")
 async def make_pred(files: List[UploadFile] = File(...),
-                    model = model):
+                    model = config['models']['separated']):
     for file in files:
         image_info = ImageId()
         image_bytes = await file.read()
@@ -55,6 +56,7 @@ def get_image(car_number: str):
     iamge_info = csv_data
     return FileResponse(f"./DB/{iamge_info[data_info['id']]}.png")
 
+# TODO: __main__ 파일로 옮김
 if __name__ == "__main__":
     import uvicorn
 
