@@ -17,7 +17,6 @@ st.set_page_config(layout="wide")
 def main():
     st.title("Car Segmentation Model")
     uploaded_files = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png"], accept_multiple_files=True)
-    
     if uploaded_files:
         for uploaded_file in uploaded_files:
             uploaded_file.name = car_number
@@ -31,10 +30,11 @@ def main():
                         uploaded_file.type))
             ]
             requests.post("http://localhost:8001/predict", files=files)
-        
-            response = get_image(car_number)
-            st.image(Image.open(io.BytesIO(response.content)))
-        
+    
+    if st.button("결과 확인"):
+        response = get_image(car_number)
+        st.image(Image.open(io.BytesIO(response.content)))
+
 
 @cache_on_button_press('Authenticate')
 def authenticate(car_number) -> bool:
