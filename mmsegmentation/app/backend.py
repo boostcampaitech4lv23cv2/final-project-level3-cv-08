@@ -33,7 +33,7 @@ def hello_world():
 
 @app.post("/predict", description="예측을 시작합니다")
 async def make_pred(files: List[UploadFile] = File(...),
-                    model = config['models']['separated']):
+                    models = config['models']):
     for file in files:
         image_info = ImageId()
         image_bytes = await file.read()
@@ -43,12 +43,15 @@ async def make_pred(files: List[UploadFile] = File(...),
 
         image_name = str(image_info.image_id)
         pred_name = str(image_info.id)
+        image_path = SAVE_PATH + image_name+".jpg"
+        plt.imsave(image_path, image_array)
+        pred_path = SAVE_PATH + pred_name + ".png"
         
-        plt.imsave(SAVE_PATH + image_name+".jpg", image_array)
-        pred_image = predict_image(model, SAVE_PATH + image_name+".jpg")
-        plt.imsave(SAVE_PATH + pred_name + ".png", pred_image[0])
-        write_log(file.filename, dict(image_info))
-        
+        for model_key, model_val in models.items():
+            pred_image = predict_image(model_val, image_path)
+            plt.imsave(SAVE_PATH + model_key + pred_name + ".png", pred_image[0])
+            write_log(file.filename, dict(image_info))
+
 
 @app.get("/images/{car_number}")
 def get_image(car_number: str):
