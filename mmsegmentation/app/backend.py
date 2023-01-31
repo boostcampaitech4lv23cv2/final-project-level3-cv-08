@@ -12,20 +12,22 @@ from typing import List
 
 sys.path.append('../')
 from app.db import read_log, write_log
-from app.model import predict_image
+from app.model import predict_image, damage_check
 from app.config import get_setting
+from app.notion import createPage, get_config
 
 app = FastAPI()
 
 class ImageId(BaseModel):
     id: UUID = Field(default_factory=uuid4)
     image_id: UUID = Field(default_factory=uuid4)
-    damage: list = []
-
+    
 # model과 config파일 가져옴
 config = get_setting()
+notion_cofig = get_config()
 SAVE_PATH = config['SAVE_PATH']
 data_info = config['data_info']
+damage_info = config['damage']
 
 @app.get("/")
 def hello_world():
@@ -47,17 +49,25 @@ async def make_pred(files: List[UploadFile] = File(...),
         plt.imsave(image_path, image_array)
         pred_path = SAVE_PATH + pred_name + ".png"
         
+        car_number, phone_number, user_name = file.filename.split("/")
+        
         for model_key, model_val in models.items():
             pred_image = predict_image(model_val, image_path)
-            plt.imsave(SAVE_PATH + model_key + pred_name + ".png", pred_image[0])
-            write_log(file.filename, dict(image_info))
-
+            plt.imsave(pred_path, pred_image[0])
+            write_log(car_number, dict(image_info))
+            Data = {"databaseId": notion_cofig['config']['databaseId'],
+                    "title": car_number,
+                    "phone_number": phone_number,
+                    "user_name": user_name,
+                    "damage": damage_info[damage_check(pred_image)],
+                    }
+            createPage(Data, notion_cofig['config']['headers'])
 
 @app.get("/images/{car_number}")
 def get_image(car_number: str):
     csv_data = read_log(car_number)
     iamge_info = csv_data
-    return FileResponse(f"./DB/{iamge_info[data_info['id']]}.png")
+    return FileResponse(f"./DB/{iamge_info[data_info['image_id']]}.jpg")
 
 # TODO: __main__ 파일로 옮김
 if __name__ == "__main__":

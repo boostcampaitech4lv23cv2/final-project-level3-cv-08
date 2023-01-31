@@ -2,29 +2,13 @@ SAVE_PATH: "./DB/"
 data_info:
   id: 0
   image_id: 1
-  damage: 2
+damage:
+  True: "손상"
+  False: "정상"
 models:
-  scratched:
-    id: 0
-    name: "scratched"
-    version: 1.0
-    config_path: "./models/scratched.py"
-    checkpoint_path: "./models/scratched.pth"
   separated:
-    id: 1
+    id: 0
     name: "separated"
     version: 1.0
-    config_path: "./models/separated.py"
-    checkpoint_path: "./models/separated.pth"
-  crushed:
-    id: 2
-    name: "crushed"
-    version: 1.0
-    config_path: "./models/crushed.py"
-    checkpoint_path: "./models/crushed.pth"
-  breakaged:
-    id: 3
-    name: "breakaged"
-    version: 1.0
-    config_path: "./models/breakaged.py"
-    checkpoint_path: "./models/breakaged.pth"
+    config_path: "./model_db/separated.py"
+    checkpoint_path: "./model_db/separated.pth"

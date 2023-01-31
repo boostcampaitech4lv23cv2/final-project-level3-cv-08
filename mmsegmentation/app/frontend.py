@@ -9,17 +9,22 @@ from PIL import Image
 import streamlit as st
 
 sys.path.append('../')
-from app.confirm_button_hack import cache_on_button_press
+from app.notion import find_car_number, update_car_status, get_config
 
 st.set_page_config(layout="wide")
 
+headers = get_config()['config']['headers']
+car_number = st.text_input('차량번호')
+phone_number = st.text_input('핸드폰 번호')
+user_name = st.text_input('이름')
+rental_select = st.selectbox("대여인가요?", ["대여", "반납"])
 
 def main():
     st.title("Car Segmentation Model")
     uploaded_files = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png"], accept_multiple_files=True)
     if uploaded_files:
         for uploaded_file in uploaded_files:
-            uploaded_file.name = car_number
+            uploaded_file.name = car_number + "/" + phone_number + "/" + user_name
             image_bytes = uploaded_file.getvalue()
             image = Image.open(io.BytesIO(image_bytes))
 
@@ -27,31 +32,44 @@ def main():
             st.write("Segmenting...")
             files = [
                 ('files', (uploaded_file.name, image_bytes,
-                        uploaded_file.type))
+                        uploaded_file.type)),
             ]
-            requests.post("http://localhost:8001/predict", files=files)
+            # requests.post("http://localhost:8001/predict",files=files)
+            requests.post("http://localhost:8001/test", files=files)
     
     if st.button("결과 확인"):
         response = get_image(car_number)
         st.image(Image.open(io.BytesIO(response.content)))
 
+        # if st.button("결과 만족"):
+        #     pass
+        # if st.button("결과 불만족"):
+        #     notion.pages.update()
+    
 
-@cache_on_button_press('Authenticate')
-def authenticate(car_number) -> bool:
-    return type(car_number) == str
+def authenticat_car(car_number) -> bool:
+    car_numbers = find_car_number(car_number)
+    return car_numbers != []
+        
+def authenticate_phone(phone_number) -> bool:
+    return type(phone_number) == str and phone_number != ""
 
-def get_images():
-    response = requests.get("http://localhost:8001/images")
-    return response.json()
+def authenticate_name(user_name) -> bool:
+    return type(user_name) == str and user_name != ""
 
 def get_image(car_number:str):
     response = requests.get(f"http://localhost:8001/images/{car_number}")
     return response
 
-car_number = st.text_input('Car number')
+from dotenv import dotenv_values
+from notion_client import Client
+config = dotenv_values(".env")
+notion_secret = config.get('NOTION_TOKEN')
+notion = Client(auth=notion_secret)
 
-if authenticate(car_number):
-    st.success('You are authenticated!')
+if authenticate_phone(phone_number) and authenticate_name(user_name) and authenticat_car(car_number):
+    st.success('감사합니다!')
+    update_car_status(car_number, rental_select, headers)
     main()
 else:
-    st.error('The car number is invalid.')
+    st.error('입력정보를 확인해주세요')
