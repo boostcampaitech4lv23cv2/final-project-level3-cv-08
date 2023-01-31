@@ -23,29 +23,24 @@ def main():
     st.title("Car Segmentation Model")
     uploaded_files = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png"], accept_multiple_files=True)
     if uploaded_files:
-        for uploaded_file in uploaded_files:
-            uploaded_file.name = car_number + "/" + phone_number + "/" + user_name
-            image_bytes = uploaded_file.getvalue()
-            image = Image.open(io.BytesIO(image_bytes))
-
-            st.image(image, caption='Uploaded Image')
-            st.write("Segmenting...")
-            files = [
-                ('files', (uploaded_file.name, image_bytes,
-                        uploaded_file.type)),
-            ]
-            # requests.post("http://localhost:8001/predict",files=files)
-            requests.post("http://localhost:8001/test", files=files)
+        predict_image(uploaded_files)
+        st.write("전송 완료")
     
     if st.button("결과 확인"):
         response = get_image(car_number)
         st.image(Image.open(io.BytesIO(response.content)))
 
-        # if st.button("결과 만족"):
-        #     pass
-        # if st.button("결과 불만족"):
-        #     notion.pages.update()
-    
+@st.cache
+def predict_image(uploaded_files):
+    for uploaded_file in uploaded_files:
+        uploaded_file.name = car_number + "/" + phone_number + "/" + user_name
+        image_bytes = uploaded_file.getvalue()
+        files = [
+            ('files', (uploaded_file.name, image_bytes,
+                    uploaded_file.type)),
+        ]
+        requests.post("http://localhost:8001/predict",files=files)
+        
 
 def authenticat_car(car_number) -> bool:
     car_numbers = find_car_number(car_number)
@@ -60,12 +55,6 @@ def authenticate_name(user_name) -> bool:
 def get_image(car_number:str):
     response = requests.get(f"http://localhost:8001/images/{car_number}")
     return response
-
-from dotenv import dotenv_values
-from notion_client import Client
-config = dotenv_values(".env")
-notion_secret = config.get('NOTION_TOKEN')
-notion = Client(auth=notion_secret)
 
 if authenticate_phone(phone_number) and authenticate_name(user_name) and authenticat_car(car_number):
     st.success('감사합니다!')
