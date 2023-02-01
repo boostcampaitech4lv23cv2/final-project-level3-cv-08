@@ -1,14 +1,11 @@
 SAVE_PATH: "./DB/"
-data_info:
-  id: 0
-  image_id: 1
 damage:
   True: "손상"
   False: "정상"
 models:
-  separated:
+  allinone:
     id: 0
-    name: "separated"
+    name: "allinone"
     version: 1.0
-    config_path: "./model_db/separated.py"
-    checkpoint_path: "./model_db/separated.pth"
+    config_path: "./model_db/allinone.py"
+    checkpoint_path: "./model_db/allinone.pth"

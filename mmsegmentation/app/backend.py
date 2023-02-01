@@ -11,29 +11,22 @@ from uuid import UUID, uuid4
 from typing import List
 
 sys.path.append('../')
-from app.db import read_log, write_log
+from app.db import write_log
 from app.model import predict_image, damage_check
 from app.config import get_setting
-from app.notion import createPage, get_config
 
 app = FastAPI()
 
 class ImageId(BaseModel):
     id: UUID = Field(default_factory=uuid4)
-    image_id: UUID = Field(default_factory=uuid4)
+    damage: str = "정상"
     
 # model과 config파일 가져옴
 config = get_setting()
-notion_cofig = get_config()
 SAVE_PATH = config['SAVE_PATH']
-data_info = config['data_info']
 damage_info = config['damage']
 
-@app.get("/")
-def hello_world():
-    return {"hello" : "world"}
-
-@app.post("/predict", description="예측을 시작합니다")
+@app.post("/predict", response_model=ImageId)
 async def make_pred(files: List[UploadFile] = File(...),
                     models = config['models']):
     for file in files:
@@ -43,33 +36,28 @@ async def make_pred(files: List[UploadFile] = File(...),
         image = image.convert("RGB")
         image_array = np.array(image)
 
-        image_name = str(image_info.image_id)
-        pred_name = str(image_info.id)
-        image_path = SAVE_PATH + image_name+".jpg"
+        id = str(image_info.id)
+        image_path = SAVE_PATH + id + ".jpg"
         plt.imsave(image_path, image_array)
-        pred_path = SAVE_PATH + pred_name + ".png"
+        pred_path = SAVE_PATH + id + "_pred.png"
         
-        car_number, phone_number, user_name = file.filename.split("/")
-        
+        car_number = file.filename
         for model_key, model_val in models.items():
             pred_image = predict_image(model_val, image_path)
             plt.imsave(pred_path, pred_image[0])
             write_log(car_number, dict(image_info))
-            Data = {"databaseId": notion_cofig['config']['databaseId'],
-                    "title": car_number,
-                    "phone_number": phone_number,
-                    "user_name": user_name,
-                    "damage": damage_info[damage_check(pred_image)],
-                    }
-            createPage(Data, notion_cofig['config']['headers'])
+            image_info.damage = damage_info[damage_check(pred_image)]
+            return image_info
+            
+@app.get("/images/{rental_id}")
+def get_image(rental_id: str):
+    return FileResponse(f"./DB/{rental_id}.jpg")
 
-@app.get("/images/{car_number}")
-def get_image(car_number: str):
-    csv_data = read_log(car_number)
-    iamge_info = csv_data
-    return FileResponse(f"./DB/{iamge_info[data_info['image_id']]}.jpg")
+@app.get("/pred_images/{rental_id}")
+def get_image(rental_id: str):
+    return FileResponse(f"./DB/{rental_id}_pred.png")
 
-# TODO: __main__ 파일로 옮김
+
 if __name__ == "__main__":
     import uvicorn
 
