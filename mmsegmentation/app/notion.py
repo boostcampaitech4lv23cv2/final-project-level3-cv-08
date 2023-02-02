@@ -29,14 +29,14 @@ def createPage(Data):
                 "name": '원본이미지',
                 "type": "external",
                 "external": {
-                    "url": f"http://localhost:8001/images/{Data['ID']}",
+                    "url": Data['img_url'],
                 }
                 },
                 {
                 "name": "검사이미지",
                 "type": "external",
                 "external": {
-                    "url": f"http://localhost:8001/pred_images/{Data['ID']}",
+                    "url": Data['pred_url'],
                 }
                 },
             ]

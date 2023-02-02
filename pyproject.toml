@@ -33,6 +33,8 @@ sqlalchemy = "^2.0.0"
 aiosqlite = "^0.18.0"
 notion-client = "^2.0.0"
 python-dotenv = "^0.21.1"
+google-cloud = "^0.34.0"
+google-cloud-storage = "^2.7.0"
 
 
 [build-system]

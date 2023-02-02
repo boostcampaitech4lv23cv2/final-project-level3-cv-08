@@ -70,7 +70,9 @@ def save_notion(data:dict):
             "phone_number": phone_number,
             "user_name": user_name,
             "damage": data['damage'],
-            "ID": data['id']
+            "ID": data['id'],
+            "img_url": data['img_url'],
+            "pred_url": data['pred_url'],
             }
             
     createPage(Data)
