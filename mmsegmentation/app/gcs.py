@@ -2,7 +2,7 @@ from google.cloud import storage
 import os
 
 PWD_PATH = "/opt/ml/mmsegmentation/app/DB/"
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="firm-lacing-374306-bfbd2d43b6ce.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="firm-lacing-374306-530d5efe30ba.json"
 
 bucket_name = 'rbc-bucket'    # 서비스 계정 생성한 bucket 이름 입력
 storage_client = storage.Client()
