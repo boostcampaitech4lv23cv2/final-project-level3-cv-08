@@ -1,30 +1,49 @@
 ## Repository 구조
 ```
-|-- DB
-|-- Makefile
 |-- README.md
-|-- __main__.py
-|-- backend.py
-|-- config.py
-|-- config.yaml
-|-- confirm_button_hack.py
-|-- db.py
-|-- frontend.py
-|-- model.py
-`-- models
-    |-- breakaged.pth
-    |-- breakaged.py
-    |-- crushed.pth
-    |-- crushed.py
-    |-- scratched.pth
-    |-- scratched.py
-    |-- separated.pth
-    `-- separated.py
+|-- app
+|   |-- DB
+|   |   `-- README.md
+|   |-- Makefile
+|   |-- README.md
+|   |-- __main__.py
+|   |-- __pycache__
+|   |   |-- config.cpython-38.pyc
+|   |   |-- confirm_button_hack.cpython-38.pyc
+|   |   |-- db.cpython-38.pyc
+|   |   |-- gcs.cpython-38.pyc
+|   |   |-- model.cpython-38.pyc
+|   |   `-- notion.cpython-38.pyc
+|   |-- backend.py
+|   |-- config.py
+|   |-- config.yaml
+|   |-- firm-lacing-374306-530d5efe30ba.json
+|   |-- frontend.py
+|   |-- gcs.py
+|   |-- model.py
+|   |-- model_db
+|   |   |-- model.pth
+|   |   |-- model_config.py
+|   `-- notion.py
+|-- mmseg
+|   |-- apis
+|   |   |-- __init__.py
+|   |   `-- inference.py
+|   |-- datasets
+|   |   |-- __init__.py
+|   |   |-- builder.py
+|   |   `-- pipelines
+|   |       `-- compose.py
+|   `-- models
+|       |-- __init__.py
+|       `-- builder.py
+|-- poetry.lock
+`-- pyproject.tom
 ```
 ## Getting Started
-0. 현재 위치를 mmsegmentation/app 으로 변경합니다
+0. 현재 위치를 app 으로 변경합니다
       ```shell
-      cd mmsegmentation/app
+      cd app
       ```
 1. Frontend(Streamlit)와 Server를 같이 실행합니다
       ```shell
