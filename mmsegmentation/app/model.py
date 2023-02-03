@@ -13,4 +13,4 @@ def predict_image(model, image_path: str) -> np.array:
     return result
 
 def damage_check(pred_image: np.array) -> bool:
-    return np.any(pred_image[0] >= 1)
+    return np.any(pred_image >= 1)
