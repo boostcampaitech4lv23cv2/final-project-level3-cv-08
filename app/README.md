@@ -7,13 +7,6 @@
 |   |-- Makefile
 |   |-- README.md
 |   |-- __main__.py
-|   |-- __pycache__
-|   |   |-- config.cpython-38.pyc
-|   |   |-- confirm_button_hack.cpython-38.pyc
-|   |   |-- db.cpython-38.pyc
-|   |   |-- gcs.cpython-38.pyc
-|   |   |-- model.cpython-38.pyc
-|   |   `-- notion.cpython-38.pyc
 |   |-- backend.py
 |   |-- config.py
 |   |-- config.yaml
