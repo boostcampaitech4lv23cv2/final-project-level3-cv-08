@@ -125,10 +125,10 @@ function App() {
     console.log("사진 전송이 click!!!!");
 
     const formData = new FormData();
-    formData.append("carFrontImg", carFrontImg)
-    formData.append("carBackImg", carBackImg)
-    formData.append("carLeftImg", carLeftImg)
-    formData.append("carRightImg", carRightImg)
+    formData.append("carFrontImg", carFrontRef.current.files[0])
+    formData.append("carBackImg", carBackRef.current.files[0])
+    formData.append("carLeftImg", carLeftRef.current.files[0])
+    formData.append("carRightImg", carRightRef.current.files[0])
     formData.append("userName", userName)
     formData.append("carNum", carNum)
     formData.append("userPhone", userPhone)
