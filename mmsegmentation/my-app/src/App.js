@@ -1,5 +1,6 @@
 import './App.css';
 import { useState, useRef, useEffect } from 'react';
+import axios from 'axios';
 import InputWithLabel from './component/InputWithLabel';
 import SelectWithLabel from './component/SelectWithLabel';
 import carFrontPrev from './images/carFront.png'
@@ -87,7 +88,7 @@ function App() {
         setCarFrontImg(reader.result);
     };
     setCarFrontState(true);
-};
+  };
 
   const saveCarBackImg = () => {
     const file = carBackRef.current.files[0];
@@ -122,6 +123,25 @@ function App() {
   const onResultClick = () => {
     setUploadingImg("");
     console.log("사진 전송이 click!!!!");
+
+    const formData = new FormData();
+    formData.append("carFrontImg", carFrontImg)
+    formData.append("carBackImg", carBackImg)
+    formData.append("carLeftImg", carLeftImg)
+    formData.append("carRightImg", carRightImg)
+    formData.append("userName", userName)
+    formData.append("carNum", carNum)
+    formData.append("userPhone", userPhone)
+    formData.append("userRent", userRent)
+
+    const requestOptions = {
+      method: 'POST',
+      body: formData
+    };
+
+    fetch("http://127.0.0.1:8000/upload", requestOptions)
+    .then(response => console.log(response.json()))
+
     alert("전송되었습니다!");
   }
 
@@ -183,7 +203,7 @@ function App() {
           <img className="carImage" src={carFrontImg ? carFrontImg : carFrontPrev} alt="차량 전면 이미지" />
           <form>
             <label className="carImgLabel"  htmlFor="carFront">{carFrontImg ? "차량 전면 이미지 추가 완료" : "차량 전면 이미지를 추가해주세요"}</label>
-            <input className="carImgInput" type="file" accept="image/*" id="carFront" onChange={saveCarFrontImg} ref={carFrontRef}/>
+            <input className="carImgInput" type="file" accept="image/*" id="carFront" accepted='.jpeg, .jpg, .png' onChange={saveCarFrontImg} ref={carFrontRef}/>
           </form>
         </div>
 
@@ -191,7 +211,7 @@ function App() {
           <img className="carImage" src={carBackImg ? carBackImg : carBackPrev} alt="차량 후면 이미지"/>
             <form>
               <label className="carImgLabel"  htmlFor="carBack">{carBackImg ? "차량 후면 이미지 추가 완료" : "차량 후면 이미지를 추가해주세요"}</label>
-              <input className="carImgInput" type="file" accept="image/*" id="carBack" onChange={saveCarBackImg} ref={carBackRef} />
+              <input className="carImgInput" type="file" accept="image/*" id="carBack" accepted='.jpeg, .jpg, .png' onChange={saveCarBackImg} ref={carBackRef} />
             </form>
         </div>
 
@@ -199,7 +219,7 @@ function App() {
             <img className="carImage" src={carLeftImg ? carLeftImg : carLeftPrev} alt="차량 좌측 이미지"/>
             <form>
               <label className="carImgLabel" htmlFor="carLeft">{carLeftImg ? "차량 좌측 이미지 추가 완료" : "차량 좌측 이미지를 추가해주세요"}</label>
-              <input className="carImgInput" type="file" accept="image/*" id="carLeft" onChange={saveCarLeftImg} ref={carLeftRef}/>
+              <input className="carImgInput" type="file" accept="image/*" id="carLeft" accepted='.jpeg, .jpg, .png' onChange={saveCarLeftImg} ref={carLeftRef}/>
             </form>
         </div>
 
@@ -207,7 +227,7 @@ function App() {
             <img className="carImage" src={carRightImg ? carRightImg : carRightPrev} alt="차량 우측 이미지"/>
             <form>
               <label className="carImgLabel" htmlFor="carRight">{carRightImg ? "차량 우측 이미지 추가 완료" : "차량 우측 이미지를 추가해주세요"}</label>
-              <input className="carImgInput" type="file" accept="image/*" id="carRight" onChange={saveCarRightImg} ref={carRightRef}/>
+              <input className="carImgInput" type="file" accept="image/*" id="carRight" accepted='.jpeg, .jpg, .png' onChange={saveCarRightImg} ref={carRightRef}/>
             </form>
         </div>
         
