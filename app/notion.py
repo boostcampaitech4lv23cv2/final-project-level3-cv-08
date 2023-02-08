@@ -20,7 +20,8 @@ def createPage( databaseId:str,
                 damage: str,
                 damage_idx: list,
                 img_url: list, 
-                pred_url: list):
+                pred_url: list,
+                feedback: bool):
     
     newPageData = {
         "차량번호": {
@@ -50,6 +51,9 @@ def createPage( databaseId:str,
         },
         "손상 세부": {
             'multi_select' : []
+        },
+        "피드백": {
+            'checkbox' : feedback
         }
     }
     for i in range(len(img_url)):
