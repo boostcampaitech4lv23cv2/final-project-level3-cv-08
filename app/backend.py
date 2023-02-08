@@ -57,6 +57,7 @@ async def receiveFile(
     ):
     
     res = ResultOfUpload()
+    res.id = str(res.id)
 
     for idx, img in enumerate([carFrontImg, carBackImg, carLeftImg, carRightImg]):
         image_name = res.id + f"_{idx}.jpg"
@@ -92,14 +93,18 @@ async def save_notion(
                 carNum: str = Form(...),
                 userPhone: str = Form(...),
                 userRent: str = Form(...),
-                img_url: list = Form(...),
-                pred_url: list = Form(...),
+                img_url: str = Form(...),
+                pred_url: str = Form(...),
                 damage: str = Form(...),
-                damage_idx: list = Form(...),
+                damage_idx: str = Form(...),
                 id: str = Form(...),
-                feedback: str = Form(...)
+                feedBack: str = Form(...)
                 ):
-            
+    
+    feedback = True if feedBack == "요청" else False
+    img_url = img_url.split(",")
+    pred_url = pred_url.split(",")
+    damage_idx = damage_idx.split(",")
     createPage( serving_database_id,
                 id, 
                 carNum,
@@ -108,9 +113,14 @@ async def save_notion(
                 damage,
                 damage_idx,
                 img_url, 
-                pred_url)
+                pred_url,
+                feedback)
     update_car_status(carNum, userRent, id)
 
+def save_log(data):
+    with open("log.txt", "a") as f:
+        f.write(data)
+    f.close()
 
 if __name__ == "__main__":
     import uvicorn
