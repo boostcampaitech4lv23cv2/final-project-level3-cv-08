@@ -42,6 +42,7 @@
    cd app
    ```
 1. Frontend(Streamlit)와 Server를 같이 실행합니다
+
    ```shell
    make -j 2 run_app
    # or
