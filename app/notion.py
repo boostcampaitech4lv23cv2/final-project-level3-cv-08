@@ -12,28 +12,37 @@ def readDatabase(databaseId):
     data = notion.databases.query(databaseId)
     return data
 
-def createPage(Data):
+def createPage( databaseId:str,
+                ID: str, 
+                title: str,
+                phone_number: str,
+                user_name: str,
+                damage: str,
+                damage_idx: list,
+                img_url: list, 
+                pred_url: list):
+    
     newPageData = {
         "차량번호": {
             "title": [{
                     "text": {
-                        "content": Data["title"]
+                        "content": title
                     }
                 }]
         },
-        '전화번호': {'phone_number': Data['phone_number']},
+        '전화번호': {'phone_number': phone_number},
         "대여자 성함": {
             "rich_text": [{
                     "text": {
-                        "content": Data["user_name"]
+                        "content": user_name
                     }
                 }]
         },
-        '손상': {'status': {'name': Data['damage']}},
+        '손상': {'status': {'name': damage}},
         '대여 ID': {
             "rich_text": [{
                     "text": {
-                        "content": Data["ID"]
+                        "content": ID
                     }
                 }]},
         "파일과 미디어": {
@@ -43,25 +52,25 @@ def createPage(Data):
             'multi_select' : []
         }
     }
-    for i in range(len(Data['img_url'])):
+    for i in range(len(img_url)):
         data = [{
                 "name": '원본이미지',
                 "type": "external",
                 "external": {
-                    "url": Data['img_url'][i],
+                    "url": img_url[i],
                 }},
                 {
                 "name": "검사이미지",
                 "type": "external",
                 "external": {
-                    "url": Data['pred_url'][i],
+                    "url": pred_url[i],
                 }}]
         newPageData['파일과 미디어']['files'].extend(data)
     
-    for idx in Data['damage_idx']:
+    for idx in damage_idx:
         newPageData['손상 세부']['multi_select'].append( {'name': idx})
         
-    notion.pages.create(parent={'database_id': Data['databaseId']}, properties=newPageData)
+    notion.pages.create(parent={'database_id': databaseId}, properties=newPageData)
 
 def get_database_pages(database_id, page_name):
     pages = notion.databases.query(database_id=database_id)
