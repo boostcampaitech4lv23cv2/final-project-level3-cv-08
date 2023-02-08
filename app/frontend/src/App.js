@@ -420,11 +420,11 @@ function App() {
           <SelectWithLabel
             value={feedBack}
             type="Text"
-            label="피드백 요청 여부를 선택해주세요"
+            label={carDamage === "정상" ? "손상이 발견되지 않았어요. 눈에 보이는 손상이 있나요?" : "손상이 발견되었어요. 차량에 손상이 발생했나요?" }
             onChange={onChangefeedBack}
           >
-            <option value="요청">피드백을 요청합니다</option>
-            <option value="미요청">피드백을 요청하지 않습니다</option>
+            <option value="요청">{carDamage === "정상" ? "네, 손상이 있어요" : "아니요, 손상이 없어요"}</option>
+            <option value="미요청">{carDamage === "정상" ? "아니요, 손상이 없어요" : "네, 손상이 있어요"}</option>
           </SelectWithLabel>
         </div>
         <div align="center">
