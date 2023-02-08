@@ -12,7 +12,7 @@ function App() {
   const [userName, setuserName] = useState("");
   const [carNum, setcarNum] = useState();
   const [userPhone, setuserPhone] = useState();
-  const [userRent, setuserRent] = useState();
+  const [userRent, setuserRent] = useState("대여");
 
   const [userNameValid, setUserNameValid] = useState(false);
   const [carNumValid, setCarNumValid] = useState(false);
@@ -39,6 +39,12 @@ function App() {
 
   const [uploadingImg, setUploadingImg] = useState("none");
 
+  const [feedBack, setFeedBack] = useState("요청");
+  const [userId, setUserId] = useState("");
+  const [carImgUrl, setCarImgUrl] = useState([]);
+  const [carDamage, setCarDamage] = useState("정상");
+  const [carDamageidx, setCarDamageidx] = useState([]);
+
   const carFrontRef = useRef();
   const carBackRef = useRef();
   const carLeftRef = useRef();
@@ -58,6 +64,10 @@ function App() {
   }
   const onChangeuserRent = (event) => {
     setuserRent(event.target.value);
+  }
+
+  const onChangefeedBack = (event) => {
+    setFeedBack(event.target.value);
   }
 
   useEffect(() => {
@@ -122,31 +132,67 @@ function App() {
 
   const onResultClick = () => {
     setUploadingImg("");
-    console.log("사진 전송이 click!!!!");
 
-    const formData = new FormData();
-    formData.append("carFrontImg", carFrontRef.current.files[0])
-    formData.append("carBackImg", carBackRef.current.files[0])
-    formData.append("carLeftImg", carLeftRef.current.files[0])
-    formData.append("carRightImg", carRightRef.current.files[0])
-    formData.append("userName", userName)
-    formData.append("carNum", carNum)
-    formData.append("userPhone", userPhone)
-    formData.append("userRent", userRent)
+    const imgData = new FormData();
+    imgData.append("carFrontImg", carFrontRef.current.files[0]);
+    imgData.append("carBackImg", carBackRef.current.files[0]);
+    imgData.append("carLeftImg", carLeftRef.current.files[0]);
+    imgData.append("carRightImg", carRightRef.current.files[0]);
 
-    const requestOptions = {
+    const imgRequestOptions = {
       method: 'POST',
-      body: formData
+      body: imgData
     };
 
-    fetch("http://127.0.0.1:8000/upload", requestOptions)
-    .then(response => console.log(response.json()))
+    fetch("http://127.0.0.1:8000/upload", imgRequestOptions)
+    .then((response) => response.json())
+    .then((url) => Object.values(url))
+    .then((data) => {
+      setUserId(Object.values(data)[0]); 
+      setCarImgUrl(Object.values(data)[1])
+      setCarFrontRes(Object.values(data)[2][0]);
+      setCarBackRes(Object.values(data)[2][1]);
+      setCarLeftRes(Object.values(data)[2][2]);
+      setCarRightRes(Object.values(data)[2][3]);
+      setCarDamage(Object.values(data)[3]);
+      setCarDamageidx(Object.values(data)[4]);
+    });
+
+    // fetch("http://127.0.0.1:8000/upload", imgRequestOptions)
+    // .then((response) => response.json())
+    // .then((url) => Object.values(url))
+    // .then((data) => {
+    //   setCarFrontRes(Object.values(data)[0][0])
+    //   setCarBackRes(Object.values(data)[0][1])
+    //   setCarLeftRes(Object.values(data)[0][2])
+    //   setCarRightRes(Object.values(data)[0][3])});
 
     alert("전송되었습니다!");
   }
 
   const onFeedbackClick = () => {
     console.log("click!!!!");
+
+    const infoData = new FormData();
+    infoData.append("userName", userName);
+    infoData.append("carNum", carNum);
+    infoData.append("userPhone", userPhone);
+    infoData.append("userRent", userRent);
+    infoData.append("img_url", carImgUrl);
+    infoData.append("pred_url", [carFrontRes, carBackRes, carLeftRes, carRightRes]);
+    infoData.append("damage", carDamage);
+    infoData.append("damage_idx", carDamageidx);
+    infoData.append("id", userId);
+    infoData.append("feedBack", feedBack);
+
+    const infoRequestOptions = {
+      method: 'POST',
+      body: infoData
+    };
+
+    fetch("http://127.0.0.1:8000/notion", infoRequestOptions)
+    .then(response => console.log(response.json()));
+
     alert("전송되었습니다!");
   }
 
@@ -244,35 +290,46 @@ function App() {
       {/* -----결과 리턴----- */}
       <div align="center" style={{display: uploadingImg}}>
         <div style={{float:"left", marginRight: "10px"}}>
-          <img className="carImage" src={carFrontPrev} alt="차량 전면 이미지 결과"></img>
+          <img className="carImage" src={carFrontRes ? carFrontRes : carFrontPrev} alt="차량 전면 이미지 결과"></img>
           <form>
             <label className="carImgLabel" htmlFor="carFrontRes">{"차량 전면 이미지 결과"}</label>
           </form>
         </div>
         <div style={{float:"right"}}>
-          <img className="carImage" src={carBackPrev} alt="차량 후면 이미지 결과"></img>
+          <img className="carImage" src={carBackRes ? carBackRes : carBackPrev} alt="차량 후면 이미지 결과"></img>
           <form>
             <label className="carImgLabel" htmlFor="carBackRes">{"차량 후면 이미지 결과"}</label>
           </form>
         </div>
         <div style={{float:"left", marginRight: "10px"}}>
-          <img className="carImage" src={carLeftPrev} alt="차량 죄측 이미지 결과"></img>
+          <img className="carImage" src={carLeftRes ? carLeftRes : carLeftPrev} alt="차량 죄측 이미지 결과"></img>
           <form>
             <label className="carImgLabel" htmlFor="carLeftRes">{"차량 좌측 이미지 결과"}</label>
           </form>
         </div>
         <div style={{float:"right"}}>
-          <img className="carImage" src={carRightPrev} alt="차량 우측 이미지 결과"></img>
+          <img className="carImage" src={carRightRes ? carRightRes : carRightPrev} alt="차량 우측 이미지 결과"></img>
           <form>
             <label className="carImgLabel" htmlFor="carRightRes">{"차량 우측 이미지 결과"}</label>
           </form>
         </div>
+      </div>
 
+      <div style={{display: uploadingImg}}>
+        <div>
+          <SelectWithLabel
+            value={feedBack}
+            type="Text"
+            label="피드백 요청 여부를 선택해주세요"
+            onChange={onChangefeedBack}>
+            <option value="요청">피드백을 요청합니다</option>
+            <option value="미요청">피드백을 요청하지 않습니다</option>
+          </SelectWithLabel>
+        </div>
         <div align="center">
-          <button className="submitButton" onClick={onFeedbackClick} disabled={false}>피드백 전송</button>
+          <button className="submitButton" onClick={onFeedbackClick} disabled={false}>결과 전송</button>
         </div>
       </div>  
-
     </div>
   );
   
