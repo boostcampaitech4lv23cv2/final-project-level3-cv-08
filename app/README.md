@@ -1,4 +1,5 @@
 ## Repository 구조
+
 ```
 |-- README.md
 |-- app
@@ -33,17 +34,20 @@
 |-- poetry.lock
 `-- pyproject.tom
 ```
+
 ## Getting Started
+
 0. 현재 위치를 app 으로 변경합니다
-      ```shell
-      cd app
-      ```
+   ```shell
+   cd app
+   ```
 1. Frontend(Streamlit)와 Server를 같이 실행합니다
-      ```shell
-      make -j 2 run_app
-      # or
-      
-      python3 -m app
-      # in other shell
-      streamlit run app/frontend.py --server.port=30001
-      ```
+
+   ```shell
+   make -j 2 run_app
+   # or
+
+   python3 -m app
+   # in other shell
+   streamlit run app/frontend.py --server.port=30001
+   ```
