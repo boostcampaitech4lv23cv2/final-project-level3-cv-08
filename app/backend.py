@@ -31,12 +31,13 @@ app.add_middleware(
     allow_headers=['*']
 )
 
-class RentalId(BaseModel):
-    id: UUID = Field(default_factory=uuid4)
-
 class ResultOfUpload(BaseModel):
-    pred_url: list = []
-
+    id: UUID = Field(default_factory=uuid4)
+    img_url : List[str] = []
+    pred_url: List[str] = []
+    damage: str = "정상"
+    damage_idx: List[str] = []
+    
 # # model과 config파일 가져옴
 config = get_setting()
 SAVE_PATH = config['SAVE_PATH']
@@ -52,20 +53,14 @@ async def receiveFile(
     carFrontImg: bytes = File(...), 
     carBackImg: bytes = File(...),
     carLeftImg: bytes = File(...),
-    carRightImg: bytes = File(...),
-    userName: str = Form(...),
-    carNum: str = Form(...),
-    userPhone: str = Form(...),
-    userRent: str = Form(...)):
+    carRightImg: bytes = File(...)
+    ):
     
-    id = str(RentalId().id)
-    img_url = []
-    pred_url = []
-    damage_idx = []
-    damage = "정상"
+    res = ResultOfUpload()
+
     for idx, img in enumerate([carFrontImg, carBackImg, carLeftImg, carRightImg]):
-        image_name = id + f"_{idx}.jpg"
-        pred_name = id + f"_pred_{idx}.png"
+        image_name = res.id + f"_{idx}.jpg"
+        pred_name = res.id + f"_pred_{idx}.png"
         image_path = SAVE_PATH + image_name
         pred_path = SAVE_PATH + pred_name
         
@@ -73,47 +68,49 @@ async def receiveFile(
         img = cv2.imdecode(img_array, cv2.IMREAD_UNCHANGED)
         cv2.imwrite(image_path, img)
         
-        img_url.append(upload_image(image_name))
+        res.img_url.append(upload_image(image_name))
         
         for model_key, model_val in models.items():
             pred_image = predict_image(model_val, image_path)
             pred_image = np.array(pred_image[0])
             img[pred_image == 1] = [225,0,0]
             cv2.imwrite(pred_path, img)
-            pred_url.append(upload_image(pred_name))
+            res.pred_url.append(upload_image(pred_name))
             if damage_check(pred_image):
-                damage_idx.append(detail[idx])
-                damage = "손상"
+                res.damage_idx.append(detail[idx])
+                res.damage = "손상"
             
         os.remove(image_path)
         os.remove(pred_path)
     
-    save_notion(serving_database_id, id, carNum, userPhone, userName,damage, userRent, damage_idx, img_url, pred_url)
-    res = ResultOfUpload()
-    res.pred_url = pred_url
     return res
 
-def save_notion(databaseId:str,
-                      ID: str, 
-                      title: str,
-                      phone_number: str,
-                      user_name: str,
-                      damage: str,
-                      userRent: str,
-                      damage_idx: list,
-                      img_url: list, 
-                      pred_url: list):
+
+@app.post("/notion")
+async def save_notion(
+                userName: str = Form(...),
+                carNum: str = Form(...),
+                userPhone: str = Form(...),
+                userRent: str = Form(...),
+                img_url: list = Form(...),
+                pred_url: list = Form(...),
+                damage: str = Form(...),
+                damage_idx: list = Form(...),
+                id: str = Form(...),
+                feedback: str = Form(...)
+                ):
             
-    createPage( databaseId,
-                ID, 
-                title,
-                phone_number,
-                user_name,
+    createPage( serving_database_id,
+                id, 
+                carNum,
+                userPhone,
+                userName,
                 damage,
                 damage_idx,
                 img_url, 
                 pred_url)
-    update_car_status(title, userRent, ID)
+    update_car_status(carNum, userRent, id)
+
 
 if __name__ == "__main__":
     import uvicorn
