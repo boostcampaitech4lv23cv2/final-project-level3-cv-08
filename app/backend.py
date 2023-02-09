@@ -21,6 +21,9 @@ app = FastAPI()
 
 origins = [
     'http://localhost:3000',
+    'http://192.168.192.1:3000',
+    'https://iihye.github.io',
+    'http://59.17.24.92:3000'
 ]
 
 app.add_middleware(
@@ -46,7 +49,7 @@ models = config['models']
 config = dotenv_values(".env")
 serving_database_id = config.get('SERVING_DATABASE_ID')
 
-detail = {0:"전면 좌측", 1: "전면 우측", 2: "후면 좌측", 3:"후면 우측"}
+detail = {0:"전면", 1: "후면", 2: "좌측", 3:"우측"}
 
 @app.post("/upload", response_model=ResultOfUpload)
 async def receiveFile(
