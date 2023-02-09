@@ -1,0 +1,42 @@
+[tool.poetry]
+name = "final-project"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.8, <3.9.7"
+opencv-python = "^4.7.0.68"
+matplotlib = "^3.6.2"
+ipython = "^8.8.0"
+pycocotools = "^2.0.6"
+scikit-image = "^0.19.3"
+pandas = "^1.5.2"
+torch = "^1.7.1"
+torchvision = "^0.8.2"
+tqdm = "^4.64.1"
+mmsegmentation = "^0.29.1"
+wandb = "^0.13.7"
+virtualenv = "^20.17.1"
+timm = "^0.6.12"
+fastapi = "^0.89.1"
+uvicorn = "^0.20.0"
+python-multipart = "^0.0.5"
+jinja2 = "^3.1.2"
+httpx = "^0.23.3"
+streamlit = "^1.17.0"
+mmcv-full = "^1.7.1"
+make = "^0.1.6.post2"
+mmcv = "^1.7.1"
+sqlalchemy = "^2.0.0"
+aiosqlite = "^0.18.0"
+notion-client = "^2.0.0"
+python-dotenv = "^0.21.1"
+google-cloud = "^0.34.0"
+google-cloud-storage = "^2.7.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

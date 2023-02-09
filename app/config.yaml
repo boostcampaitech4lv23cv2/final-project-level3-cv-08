@@ -1,0 +1,11 @@
+SAVE_PATH: "./DB/"
+damage:
+  True: "손상"
+  False: "정상"
+models:
+  allinone:
+    id: 0
+    name: "allinone"
+    version: 1.0
+    config_path: "./model_db/allinone.py"
+    checkpoint_path: "./model_db/allinone.pth"
