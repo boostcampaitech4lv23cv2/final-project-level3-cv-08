@@ -51,11 +51,11 @@
 ## 🗃️ 서비스 아키텍쳐
 
 ### - 전체 구성도
-<img width="1920" alt="image" src="https://user-images.githubusercontent.com/74412423/217645344-7845d766-2ebc-4684-8243-bce4322bacea.png">
+<img width="1920" alt="image" src="https://user-images.githubusercontent.com/74412423/218044743-6c696f15-a1e7-48b3-b1fe-1a552f9a9edb.png">
 
 ### - 고객 화면
 - **고객 정보**와 **차량 정보**를 입력한 뒤 추론된 결과를 통해 **손상 여부를 파악**할 수 있음
-<img width="1920" alt="image" src="https://user-images.githubusercontent.com/74412423/217643777-ee598880-0fc0-4197-bf2c-386cccc95988.png">
+<img width="1920" alt="image" src="https://user-images.githubusercontent.com/74412423/218044700-b4f9cd5f-3961-428c-acf7-0cfd13f7ddb4.png">
 
 ### - 관리자 화면
 - 고객이 입력한 **데이터를 확인**할 수 있고, 노션의 API로 제작되어 관리자가 원하는 **편의 기능**을 자유롭게 구현할 수 있음
